@@ -1,16 +1,16 @@
 from typing import AsyncGenerator
 
 from sqlmodel import SQLModel, create_engine
-from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from sqlalchemy.orm import sessionmaker
-from config import DATABASE_URL
+from app.config import DATABASE_URL
 
 
 connect_args = {"check_same_thread": False}
 
-engine = AsyncEngine(create_engine(
-    DATABASE_URL, connect_args=connect_args, echo=True, future=True))
+engine = create_async_engine(DATABASE_URL, connect_args=connect_args, echo=True, future=True)
 
 
 async def init_db():

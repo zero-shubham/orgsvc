@@ -9,7 +9,7 @@ from sqlalchemy import Column, Enum, ARRAY, String
 class QuestionTypesEnum(str, enum.Enum):
     descriptive = "descriptive"
     multiple_choice = "multiple_choice"
-    multiple_option = "multiple_choice"
+    multiple_option = "multiple_option"
 
 
 class Questions(SQLModel, table=True):

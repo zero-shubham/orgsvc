@@ -7,10 +7,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
 from alembic import context
-	
+
 import alembic_postgresql_enum
 
 from app.models import Campaigns, Organizations, Questions
+from app.config import DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -45,7 +46,9 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # url = config.get_main_option("sqlalchemy.url")
+    # * Overriding DB URI here, as we don't use alembic ini
+    url = DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -69,7 +72,9 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
-
+    dsn = config.get_main_option("sqlalchemy.url")
+    if not dsn:
+        config.set_main_option("sqlalchemy.url", DATABASE_URL)
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

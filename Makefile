@@ -31,11 +31,11 @@ build:
 
 # Build Docker image
 docker-build:
-	docker build -t fastapi-app .
+	docker build -t orgsvc .
 
 # Run Docker container
 docker-run:
-	docker run -p 8000:8000 fastapi-app
+	docker run -p 8000:8000 orgsvc
 
 # Clean up temporary files
 clean:
