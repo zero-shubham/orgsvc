@@ -15,7 +15,7 @@ class QuestionTypesEnum(str, enum.Enum):
 class Questions(SQLModel, table=True):
     id: UUID = Field(primary_key=True)
     org_id: UUID = Field(foreign_key="organizations.id")
-    question_text: str = Field()
+    question_text: str = Field(unique=True)
     question_type: QuestionTypesEnum = Field(
         sa_column=Column(Enum(QuestionTypesEnum)))
     options: List[str] = Field(sa_column=Column(ARRAY(String)))
