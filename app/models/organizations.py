@@ -5,11 +5,11 @@ from datetime import datetime
 
 class Organizations(SQLModel, table=True):
     id: UUID = Field(primary_key=True)
-    name: str = Field(index=True)
+    name: str = Field(index=True, unique=True)
     created_at: datetime = Field()
     updated_at: datetime = Field()
 
-    questions: list["Questions"] = Relationship(back_populates="questions")
+    # questions: list["Questions"] = Relationship(back_populates="questions")
 
-    questions: list["Organizations"] = Relationship(
-        back_populates="organizations")
+    # organizations: list["Organizations"] = Relationship(
+    #     back_populates="organizations")

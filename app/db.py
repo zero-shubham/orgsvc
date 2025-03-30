@@ -8,9 +8,9 @@ from sqlalchemy.orm import sessionmaker
 from app.config import DATABASE_URL
 
 
-connect_args = {"check_same_thread": False}
+# connect_args = {"check_same_thread": False}
 
-engine = create_async_engine(DATABASE_URL, connect_args=connect_args, echo=True, future=True)
+engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
 
 async def init_db():
