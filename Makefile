@@ -59,4 +59,4 @@ test:
 		--cov-report term \
 		--cov-report term-missing \
 		--cov-report html
-	docker-compose stop
+	docker compose stop

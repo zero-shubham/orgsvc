@@ -43,7 +43,6 @@ def __execute_upgrade(connection):
 
 
 async def clean_test_db(session) -> None:
-    await session.execute(text("DELETE from questions"))
-    await session.execute(text("DELETE from campaigns"))
-    await session.execute(text("DELETE from organizations"))
+    await session.execute(text("DROP SCHEMA public CASCADE"))
+    await session.execute(text("CREATE SCHEMA public"))
     await session.commit()

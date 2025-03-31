@@ -38,31 +38,9 @@ async def test_create_campaign():
         assert UUID(data["id"])
 
 
-# @pytest.mark.asyncio
-# async def test_create_campaign_with_past_start_date(client):
-#     # First create an organization
-#     org_response = await client.post("/v1/organizations/", params={"name": "Test Org 2"})
-#     org_id = org_response.json()["id"]
-
-#     # Create campaign data with past start date
-#     start_date = date.today() - timedelta(days=1)
-#     end_date = start_date + timedelta(days=30)
-
-#     response = await client.post(
-#         "/v1/campaigns/",
-#         json={
-#             "name": "Test Campaign 2",
-#             "org_id": str(org_id),
-#             "start_date": start_date.isoformat(),
-#             "end_date": end_date.isoformat()
-#         }
-#     )
-#     assert response.status_code == 422  # Validation error
-
-
 @pytest.mark.asyncio
 async def test_get_campaign():
-     async with AsyncClient(
+    async with AsyncClient(
         transport=ASGITransport(app=app, ), base_url="http://test"
     ) as client:
         # Create an organization and campaign
