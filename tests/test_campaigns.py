@@ -1,12 +1,12 @@
 import pytest
 from uuid import UUID
 from datetime import date, timedelta
-from app.models.campaigns import Campaigns
+from src.models.campaigns import Campaigns
 
-
-def test_create_campaign(client):
+@pytest.mark.anyio
+async def test_create_campaign(client):
     # First create an organization
-    org_response = client.post("/v1/organizations/", params={"name": "Test Org"})
+    org_response = await client.post("/v1/organizations/", params={"name": "Test Org"})
     print(org_response)
     org_id = org_response.json()["id"]
 
@@ -14,7 +14,7 @@ def test_create_campaign(client):
     start_date = date.today() + timedelta(days=1)
     end_date = start_date + timedelta(days=30)
 
-    response = client.post(
+    response =await  client.post(
         "/v1/campaigns/",
         json={
             "name": "Test Campaign",

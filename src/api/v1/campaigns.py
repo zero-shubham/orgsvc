@@ -4,9 +4,9 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List
 
-from app.models.campaigns import Campaigns
-from app.db import get_session
-from app.schemas.campaigns import CampaignCreate, CampaignResponse
+from src.models.campaigns import Campaigns
+from src.db import get_session
+from src.schemas.campaigns import CampaignCreate, CampaignResponse
 
 campaign_router = APIRouter()
 

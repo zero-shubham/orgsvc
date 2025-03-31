@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  orgsvc:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@orgsvc-db:5432/datab
+    restart: always
+    volumes:
+      - svc-vol:/root
+      - type: bind
+        source: './'
+        target: '/orgsvc'
+    depends_on:
+      - orgsvc-db
+
+  orgsvc-db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=datab
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+  svc-vol:

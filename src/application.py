@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.db import init_db
-from app.api import api_router
+from src.db import init_db
+from src.api import api_router
 
 app = FastAPI()
 

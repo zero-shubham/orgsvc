@@ -54,9 +54,9 @@ build_test:
 	docker compose -f docker-compose-test.yml build --no-cache 
 
 test:
-	make uv_export && export ENV=test && docker compose -f docker-compose-test.yml run boilerplate-test-api pytest --disable-warnings -v /app/tests/ \
-			--cov=src \
-			--cov-report term \
-			--cov-report term-missing \
-			--cov-report html
-		docker-compose stop
+	make uv_export && export ENV=test && docker compose -f docker-compose-test.yml run orgsvc-test pytest --disable-warnings -v /orgsvc/tests/ \
+		--cov=src \
+		--cov-report term \
+		--cov-report term-missing \
+		--cov-report html
+	docker-compose stop

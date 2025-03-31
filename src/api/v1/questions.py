@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List
 from sqlmodel import Session, select
-from app.schemas.questions import QuestionBase
-from app.models.questions import Questions, QuestionTypesEnum
-from app.db import get_session
+from src.schemas.questions import QuestionBase
+from src.models.questions import Questions, QuestionTypesEnum
+from src.db import get_session
 
 questions_router = APIRouter()
 

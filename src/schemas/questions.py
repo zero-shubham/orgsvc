@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 from typing import List
-from app.models.questions import QuestionTypesEnum
+from src.models.questions import QuestionTypesEnum
 
 
 class QuestionBase(BaseModel):

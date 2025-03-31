@@ -1,6 +1,6 @@
 import pytest
 from uuid import UUID
-from app.models.organizations import Organizations
+from src.models.organizations import Organizations
 
 
 def test_create_organization(client):

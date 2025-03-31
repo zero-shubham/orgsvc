@@ -5,13 +5,15 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from sqlalchemy.orm import sessionmaker
-from app.config import DATABASE_URL
+from src.config import DATABASE_URL
 
 
-# connect_args = {"check_same_thread": False}
+connect_args = {"check_same_thread": True}
 
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
+# test_engine = create_engine(app_config.DATABASE_URL, pool_pre_ping=True)
+# TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 async def init_db():
     async with engine.begin() as conn:

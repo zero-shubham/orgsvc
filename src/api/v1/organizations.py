@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List
 from sqlmodel import Session, select
-from app.schemas.organizations import OrganizationBase
-from app.models.organizations import Organizations
-from app.db import get_session
+from src.schemas.organizations import OrganizationBase
+from src.models.organizations import Organizations
+from src.db import get_session
 
 org_router = APIRouter()
 

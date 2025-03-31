@@ -1,6 +1,6 @@
 import pytest
 from uuid import UUID
-from app.models.questions import Questions, QuestionTypesEnum
+from src.models.questions import Questions, QuestionTypesEnum
 
 
 def test_create_question(client):
