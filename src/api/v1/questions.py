@@ -28,14 +28,14 @@ async def create_question(
         updated_at=datetime.now()
     )
     session.add(question)
-    session.commit()
-    session.refresh(question)
+    await session.commit()
+    await session.refresh(question)
     return question
 
 
 @questions_router.get("/{question_id}", response_model=QuestionBase)
 async def get_question(question_id: UUID, session: Session = Depends(get_session)):
-    question = session.get(Questions, question_id)
+    question = await session.get(Questions, question_id)
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
     return question
@@ -43,14 +43,15 @@ async def get_question(question_id: UUID, session: Session = Depends(get_session
 
 @questions_router.get("/", response_model=List[QuestionBase])
 async def list_questions(session: Session = Depends(get_session)):
-    return session.exec(select(Questions)).all()
+    results = await session.exec(select(Questions))
+    return results.all()
 
 
 @questions_router.delete("/{question_id}")
 async def delete_question(question_id: UUID, session: Session = Depends(get_session)):
-    question = session.get(Questions, question_id)
+    question = await session.get(Questions, question_id)
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
-    session.delete(question)
-    session.commit()
+    await session.delete(question)
+    await session.commit()
     return {"message": "Question deleted successfully"}

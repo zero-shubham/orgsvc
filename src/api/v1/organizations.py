@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from uuid import UUID, uuid4
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import List
 from sqlmodel import Session, select
 from src.schemas.organizations import OrganizationBase
@@ -26,7 +26,7 @@ async def create_organization(name: str, session: Session = Depends(get_session)
 
 @org_router.get("/{org_id}", response_model=OrganizationBase)
 async def get_organization(org_id: UUID, session: Session = Depends(get_session)):
-    org = session.get(Organizations, org_id)
+    org = await session.get(Organizations, org_id)
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
     return org
@@ -34,16 +34,15 @@ async def get_organization(org_id: UUID, session: Session = Depends(get_session)
 
 @org_router.get("/", response_model=List[OrganizationBase])
 async def list_organizations(session: Session = Depends(get_session)):
-
     results = await session.exec(select(Organizations))
     return results
 
 
 @org_router.delete("/{org_id}")
 async def delete_organization(org_id: UUID, session: Session = Depends(get_session)):
-    org = session.get(Organizations, org_id)
+    org = await session.get(Organizations, org_id)
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
-    session.delete(org)
-    session.commit()
+    await session.delete(org)
+    await session.commit()
     return {"message": "Organization deleted successfully"}

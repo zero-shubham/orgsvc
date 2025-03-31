@@ -1,31 +1,43 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, create_engine, SQLModel
 from src.application import app
-from src.db import get_session, DATABASE_URL
 from httpx import ASGITransport, AsyncClient
-# Use in-memory SQLite for testing
-# TEST_DATABASE_URL = DATABASE_URL
-# engine = create_engine(TEST_DATABASE_URL, echo=False)
+from src.db import run_migrations, clean_test_db, DATABASE_URL, get_session
+import asyncio
+import pytest_asyncio
 
 
-# @pytest.fixture(name="session")
-# def session_fixture():
-#     SQLModel.metadata.create_all(engine)
-#     with Session(engine) as session:
-#         yield session
-#     SQLModel.metadata.drop_all(engine)
+# @pytest_asyncio.fixture(name="client", scope="module")
+# async def client_fixture():
+#     async with AsyncClient(
+#         transport=ASGITransport(app=app, ), base_url="http://test"
+#     ) as client:
+#         yield client
+
+#     app.dependency_overrides.clear()
 
 
-@pytest.fixture(name="client")
-@pytest.mark.anyio
-async def client_fixture():
-    # def get_session_override():
-    #     yield session
+@pytest_asyncio.fixture(scope='session', autouse=True)
+def event_loop(request):
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
-    # app.dependency_overrides[get_session] = get_session_override
-    async with AsyncClient(
-        transport=ASGITransport(app=app)
-    ) as client:
-        yield client
-    app.dependency_overrides.clear() 
+
+@pytest_asyncio.fixture(autouse=True)
+async def migrate():
+    await run_migrations("./migrations", DATABASE_URL)
+    yield
+    async for session in get_session():
+        await clean_test_db(session)
+
+
+# @pytest.fixture(scope="session")
+# @pytest.mark.anyio
+# async def cleanup():
+#     print("this is setup")
+#     async for session in get_session():
+#         await clean_test_db(session)
+#     yield
+#     async for session in get_session():
+#         await clean_test_db(session)

@@ -5,13 +5,15 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
+from sqlalchemy import engine_from_config
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from alembic import context
 
 import alembic_postgresql_enum
 
-from app.models import Campaigns, Organizations, Questions
-from app.config import DATABASE_URL
+from src.models import Campaigns, Organizations, Questions
+from src.config import DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -90,7 +92,21 @@ async def run_async_migrations() -> None:
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
 
-    asyncio.run(run_async_migrations())
+    connectable = context.config.attributes.get("connection", None)
+    if connectable is None:
+        connectable = AsyncEngine(
+            engine_from_config(
+                context.config.get_section(context.config.config_ini_section),
+                prefix="sqlalchemy.",
+                poolclass=pool.NullPool,
+                future=True
+            )
+        )
+
+    if isinstance(connectable, AsyncEngine):
+        asyncio.run(run_async_migrations(connectable))
+    else:
+        do_run_migrations(connectable)
 
 
 if context.is_offline_mode():

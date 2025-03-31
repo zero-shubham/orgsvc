@@ -1,12 +1,12 @@
 from fastapi import APIRouter
-from .campaigns import campaign_router
+from .campaigns import campaigns_router
 from .organizations import org_router
 from .questions import questions_router
 
 apiv1_router = APIRouter()
 
 apiv1_router.include_router(
-    campaign_router, prefix="/campaigns", tags=["campaigns"])
+    campaigns_router, prefix="/campaigns", tags=["campaigns"])
 apiv1_router.include_router(
     org_router, prefix="/organizations", tags=["organizations"])
 apiv1_router.include_router(
