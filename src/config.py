@@ -6,3 +6,7 @@ load_dotenv()
 # Database connection settings
 DATABASE_URL = getenv(
     "DATABASE_URL", "postgresql://user:password@localhost/dbname")
+
+SERVICE_NAME = getenv(
+    "SERVICE_NAME", "orgsvc"
+)

@@ -6,12 +6,19 @@ from sqlmodel import Session, select
 from src.schemas.organizations import OrganizationBase
 from src.models.organizations import Organizations
 from src.db import get_session
+from src.logger import get_request_logger
+from structlog.typing import FilteringBoundLogger
 
 org_router = APIRouter()
 
 
 @org_router.post("/", response_model=OrganizationBase)
-async def create_organization(name: str, session: Session = Depends(get_session)):
+async def create_organization(
+        name: str,
+        session: Session = Depends(get_session),
+        logger: FilteringBoundLogger = Depends(get_request_logger)
+):
+    logger.info("creating organization")
     org = Organizations(
         id=uuid4(),
         name=name,
@@ -21,6 +28,7 @@ async def create_organization(name: str, session: Session = Depends(get_session)
     session.add(org)
     await session.commit()
     await session.refresh(org)
+    logger.info("created organization")
     return org
 
 

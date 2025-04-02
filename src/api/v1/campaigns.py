@@ -6,6 +6,8 @@ from sqlmodel import Session, select
 from src.schemas.campaigns import CampaignBase, CampaignCreate, CampaignResponse
 from src.models.campaigns import Campaigns
 from src.db import get_session
+from src.logger import get_request_logger
+from structlog.typing import FilteringBoundLogger
 
 campaigns_router = APIRouter()
 
@@ -13,9 +15,10 @@ campaigns_router = APIRouter()
 @campaigns_router.post("/", response_model=CampaignResponse)
 async def create_campaign(
     campaign: CampaignCreate,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    logger: FilteringBoundLogger = Depends(get_request_logger)
 ):
-
+    logger.info("creating campaign")
     db_campaign = Campaigns(
         id=uuid4(),
         name=campaign.name,
@@ -28,6 +31,7 @@ async def create_campaign(
     session.add(db_campaign)
     await session.commit()
     await session.refresh(db_campaign)
+    logger.info("created campaign")
     return db_campaign
 
 
