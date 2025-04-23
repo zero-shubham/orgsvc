@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from src.db import init_db, run_migrations
+from src.db import init_db, run_migrations, DATABASE_URL
 from fastapi import FastAPI
 from src.application import app
 from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
@@ -31,4 +31,5 @@ tracer = trace.get_tracer("my.tracer.name")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    await run_migrations("./migrations", DATABASE_URL)
     yield
