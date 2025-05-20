@@ -3,27 +3,24 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List
 from sqlmodel import Session, select
-from src.schemas.questions import QuestionBase, QuestionsResp
+from src.schemas.questions import QuestionResponse, QuestionsResp,QuestionCreate
 from src.models.questions import Questions, QuestionTypesEnum
 from src.db import get_session
 
 questions_router = APIRouter()
 
 
-@questions_router.post("/", response_model=QuestionBase)
+@questions_router.post("/", response_model=QuestionResponse)
 async def create_question(
-    org_id: UUID,
-    question_text: str,
-    question_type: QuestionTypesEnum,
-    options: List[str],
+    question: QuestionCreate,
     session: Session = Depends(get_session)
 ):
     question = Questions(
         id=uuid4(),
-        org_id=org_id,
-        question_text=question_text,
-        question_type=question_type,
-        options=options,
+        org_id=question.org_id,
+        question_text=question.question_text,
+        question_type=question.question_type,
+        options=question.options,
         created_at=datetime.now(),
         updated_at=datetime.now()
     )
@@ -33,7 +30,7 @@ async def create_question(
     return question
 
 
-@questions_router.get("/{question_id}", response_model=QuestionBase)
+@questions_router.get("/{question_id}", response_model=QuestionResponse)
 async def get_question(question_id: UUID, session: Session = Depends(get_session)):
     question = await session.get(Questions, question_id)
     if not question:

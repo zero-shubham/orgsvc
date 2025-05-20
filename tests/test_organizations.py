@@ -34,17 +34,26 @@
 #     assert response.status_code == 404
 
 
-# @pytest.mark.anyio
-# async def test_list_organizations(client):
-#     # Create multiple organizations
-#     await client.post("/v1/organizations/", params={"name": "Org 1"})
-#     await client.post("/v1/organizations/", params={"name": "Org 2"})
+import pytest
+from uuid import UUID
+from src.models.organizations import Organizations
+from src.application import app
+from httpx import ASGITransport, AsyncClient
 
-#     response = await client.get("/v1/organizations/")
-#     assert response.status_code == 200
-#     data = response.json()
-#     assert len(data) == 2
-#     assert {org["name"] for org in data} == {"Org 1", "Org 2"}
+@pytest.mark.asyncio
+async def test_list_organizations():
+    async with AsyncClient(
+        transport=ASGITransport(app=app, ), base_url="http://test"
+    ) as client:
+        # Create multiple organizations
+        await client.post("/v1/organizations/", params={"name": "Org 1"})
+        await client.post("/v1/organizations/", params={"name": "Org 2"})
+
+        response = await client.get("/v1/organizations/")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["organizations"]) == 2
+        assert {org["name"] for org in data["organizations"]} == {"Org 1", "Org 2"}
 
 
 # @pytest.mark.anyio
