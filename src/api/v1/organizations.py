@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from datetime import datetime, UTC
 from typing import List
 from sqlmodel import Session, select
-from src.schemas.organizations import OrganizationBase
+from src.schemas.organizations import OrganizationBase, OrganizationsResp
 from src.models.organizations import Organizations
 from src.db import get_session
 from src.logger import get_request_logger
@@ -40,10 +40,10 @@ async def get_organization(org_id: UUID, session: Session = Depends(get_session)
     return org
 
 
-@org_router.get("/", response_model=List[OrganizationBase])
+@org_router.get("/", response_model=OrganizationsResp)
 async def list_organizations(session: Session = Depends(get_session)):
     results = await session.exec(select(Organizations))
-    return results
+    return OrganizationsResp(organizations=results.all())
 
 
 @org_router.delete("/{org_id}")

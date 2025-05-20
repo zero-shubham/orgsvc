@@ -77,41 +77,44 @@ async def test_get_campaign():
 #     assert response.status_code == 404
 
 
-# @pytest.mark.asyncio
-# async def test_list_campaigns(client):
-#     # Create an organization
-#     org_response = await client.post(
-#         "/v1/organizations/", params={"name": "Test Org 4"})
-#     org_id = org_response.json()["id"]
+@pytest.mark.asyncio
+async def test_list_campaigns():
+    async with AsyncClient(
+        transport=ASGITransport(app=app, ), base_url="http://test"
+    ) as client:
+        # Create an organization
+        org_response = await client.post(
+            "/v1/organizations/", params={"name": "Test Org 4"})
+        org_id = org_response.json()["id"]
 
-#     # Create multiple campaigns
-#     start_date = date.today() + timedelta(days=1)
-#     end_date = start_date + timedelta(days=30)
+        # Create multiple campaigns
+        start_date = date.today() + timedelta(days=1)
+        end_date = start_date + timedelta(days=30)
 
-#     await client.post(
-#         "/v1/campaigns/",
-#         json={
-#             "name": "Campaign 1 4",
-#             "org_id": str(org_id),
-#             "start_date": start_date.isoformat(),
-#             "end_date": end_date.isoformat()
-#         }
-#     )
-#     await client.post(
-#         "/v1/campaigns/",
-#         json={
-#             "name": "Campaign 2 4",
-#             "org_id": str(org_id),
-#             "start_date": start_date.isoformat(),
-#             "end_date": end_date.isoformat()
-#         }
-#     )
+        await client.post(
+            "/v1/campaigns/",
+            json={
+                "name": "Campaign 1 4",
+                "org_id": str(org_id),
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat()
+            }
+        )
+        await client.post(
+            "/v1/campaigns/",
+            json={
+                "name": "Campaign 2 4",
+                "org_id": str(org_id),
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat()
+            }
+        )
 
-#     response = await client.get("/v1/campaigns/")
-#     assert response.status_code == 200
-#     data = response.json()
-#     assert len(data) == 2
-#     assert {c["name"] for c in data} == {"Campaign 1 4", "Campaign 2 4"}
+        response = await client.get("/v1/campaigns/")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["campaigns"]) == 2
+        assert {c["name"] for c in data["campaigns"]} == {"Campaign 1 4", "Campaign 2 4"}
 
 
 # @pytest.mark.asyncio

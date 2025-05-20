@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from datetime import date, datetime, UTC
 from typing import List
 from sqlmodel import Session, select
-from src.schemas.campaigns import CampaignBase, CampaignCreate, CampaignResponse
+from src.schemas.campaigns import CampaignCreate, CampaignResponse, CampaignsResp
 from src.models.campaigns import Campaigns
 from src.db import get_session
 from src.logger import get_request_logger
@@ -43,12 +43,12 @@ async def get_campaign(campaign_id: UUID, session: Session = Depends(get_session
     return campaign
 
 
-@campaigns_router.get("/", response_model=List[CampaignResponse])
+@campaigns_router.get("/", response_model=CampaignsResp)
 async def list_campaigns(
     session: Session = Depends(get_session)
 ):
-    campaigns = await session.exec(select(Campaigns)).all()
-    return campaigns
+    campaigns = await session.exec(select(Campaigns))
+    return CampaignsResp(campaigns=campaigns.all())
 
 
 @campaigns_router.delete("/{campaign_id}")

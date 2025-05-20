@@ -12,4 +12,8 @@ class QuestionBase(BaseModel):
     question_type: QuestionTypesEnum
     options: List[str]
     created_at: datetime
-    updated_at: datetime 
+    updated_at: datetime
+
+
+class QuestionsResp(BaseModel):
+    questions: List[QuestionBase]

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import date, datetime
+from typing import List
 
 
 class CampaignBase(BaseModel):
@@ -20,4 +21,8 @@ class CampaignResponse(CampaignBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
+
+
+class CampaignsResp(BaseModel):
+    campaigns: List[CampaignResponse]

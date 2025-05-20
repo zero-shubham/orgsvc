@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List
 from sqlmodel import Session, select
-from src.schemas.questions import QuestionBase
+from src.schemas.questions import QuestionBase, QuestionsResp
 from src.models.questions import Questions, QuestionTypesEnum
 from src.db import get_session
 
@@ -41,10 +41,10 @@ async def get_question(question_id: UUID, session: Session = Depends(get_session
     return question
 
 
-@questions_router.get("/", response_model=List[QuestionBase])
+@questions_router.get("/", response_model=QuestionsResp)
 async def list_questions(session: Session = Depends(get_session)):
     results = await session.exec(select(Questions))
-    return results.all()
+    return QuestionsResp(questions=results.all())
 
 
 @questions_router.delete("/{question_id}")
