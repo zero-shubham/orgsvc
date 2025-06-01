@@ -1,0 +1,40 @@
+filebeat.inputs:
+  - type: container
+    id: docker-logs
+    stream: 'all'
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    parsers:
+      # If each line is a self-contained JSON object, use ndjson parser
+      - ndjson:
+          target: '' # Crucial: Puts JSON keys at the root of the event
+          overwrite_keys: true # Crucial: Overwrites existing Filebeat fields if names conflict
+          # Optional: If your JSON has a specific field that represents the main message,
+          # you can specify it here. If omitted, and your JSON has a "message" field,
+          # it will directly become the 'message' field in Elasticsearch.
+          # message_key: "my_custom_message_field"
+    processors:
+      - add_docker_metadata: ~
+      # You can add more processors here, e.g., for parsing specific log formats
+      # - decode_json_fields:
+      #     fields: ["message"]
+      #     target: "json"
+      #     overwrite_keys: true
+      - decode_json_fields:
+          fields: ['message'] # Assumes the JSON string is in the 'message' field
+          target: '' # Decodes JSON directly into the root of the event
+          overwrite_keys: true # Overwrites existing fields if keys conflict
+          # Optional: if your JSON has a specific key that should be the 'message'
+          # message_key: "log_message"
+          # add_error_key: true # Adds an error field if parsing fails
+
+output.elasticsearch:
+  hosts: ['elasticsearch:9200'] # 'elasticsearch' is the service name in docker-compose
+  # Since xpack.security.enabled=false in your Elasticsearch, no username/password needed
+  # If you enable security later, add:
+  # username: elastic
+  # password: your_elastic_password
+
+# Optional: Set up Kibana if you add it to your stack (recommended for log viewing)
+setup.kibana:
+  host: 'kibana:5601'

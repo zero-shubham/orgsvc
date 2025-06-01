@@ -23,14 +23,16 @@ services:
     depends_on:
       - jaeger-server
       - prometheus
+
   prometheus:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
     ports:
       - '9200:9200'
       - '9300:9300'
@@ -41,6 +43,7 @@ services:
       - xpack.security.enabled=false
     volumes:
       - esdata:/usr/share/elasticsearch/data
+
   jaeger-server:
     image: jaegertracing/all-in-one:latest
     restart: on-failure
@@ -59,10 +62,7 @@ services:
       ]
     depends_on:
       - elasticsearch
-    #   - type: bind
-    #     source: './'
-    #     target: '/conf/jaeger'
-    # command: ['--config', '/conf/jaeger/jaeger.yaml']
+
   orgsvc:
     build:
       context: ./
@@ -95,6 +95,31 @@ services:
       - POSTGRES_DB=datab
     ports:
       - '5432:5432'
+
+  # --- Filebeat Service ---
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.15.0 # Match Elasticsearch version
+    container_name: filebeat
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro # Mount your Filebeat config
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro # For general Docker container logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro # For Docker metadata (container names, IDs, etc.)
+    command: ['filebeat', '-e', '-strict.perms=false']
+    user: root
+    depends_on:
+      - elasticsearch # Filebeat depends on Elasticsearch being up
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.1 # Use a specific version, matching Elasticsearch
+    container_name: kibana
+    ports:
+      - '5601:5601'
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # - ELASTICSEARCH_USERNAME=kibana_system # Default user for Kibana to connect to ES
+      # - ELASTICSEARCH_PASSWORD=changeme # IMPORTANT: Change this if you change elastic user password
+    depends_on:
+      - elasticsearch
 
 volumes:
   postgres_data:

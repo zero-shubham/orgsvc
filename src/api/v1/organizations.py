@@ -41,9 +41,14 @@ async def get_organization(org_id: UUID, session: Session = Depends(get_session)
 
 
 @org_router.get("/", response_model=OrganizationsResp)
-async def list_organizations(session: Session = Depends(get_session)):
+async def list_organizations(
+    session: Session = Depends(get_session),
+    logger: FilteringBoundLogger = Depends(get_request_logger)
+):
     results = await session.exec(select(Organizations))
-    return OrganizationsResp(organizations=results.all())
+    orgs = results.all()
+    logger.info("retrieved orgs", count=len(orgs))
+    return OrganizationsResp(organizations=orgs)
 
 
 @org_router.delete("/{org_id}")
