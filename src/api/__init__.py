@@ -1,8 +1,4 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import text
-
-
+from fastapi import APIRouter
 from .v1 import apiv1_router
 
 api_router = APIRouter()

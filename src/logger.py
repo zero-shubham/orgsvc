@@ -26,15 +26,14 @@ def get_request_id(request: Request) -> str:
 
 def type_cast_to_str(logger: Logger, method_name: str, event_dict: dict) -> dict:
     provider = get_tracer_provider()
-    service_name = None
-    if service_name is None:
-        resource = getattr(provider, "resource", None)
-        if resource:
-            service_name = (
-                resource.attributes.get("service.name") or SERVICE_NAME
-            )
-        else:
-            service_name = SERVICE_NAME
+
+    service_name = SERVICE_NAME
+
+    resource = getattr(provider, "resource", None)
+    if resource:
+        service_name = (
+            resource.attributes.get("service.name") or SERVICE_NAME
+        )
 
     if "event" in event_dict:
         event_dict["message"] = event_dict.pop("event")
@@ -52,10 +51,10 @@ def type_cast_to_str(logger: Logger, method_name: str, event_dict: dict) -> dict
     if span != INVALID_SPAN:
         ctx = span.get_span_context()
         if ctx != INVALID_SPAN_CONTEXT:
-            _event_dict["otelSpanID"] = ctx.span_id
-            _event_dict["otelTraceID"] = ctx.trace_id
-            _event_dict["otelServiceName"] = service_name
-            _event_dict["otelTraceSampled"] = ctx.trace_flags.sampled
+            _event_dict["span_id"] = ctx.span_id
+            _event_dict["trace_id"] = ctx.trace_id
+            _event_dict["service_name"] = service_name
+            _event_dict["trace_sampled"] = ctx.trace_flags.sampled
 
     return jsonable_encoder(_event_dict)
 
